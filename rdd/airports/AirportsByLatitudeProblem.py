@@ -1,4 +1,5 @@
-from pyspark import SparkContext
+from pyspark import SparkContext, SparkConf
+import re
 
 if __name__ == "__main__":
 
@@ -15,3 +16,16 @@ if __name__ == "__main__":
     "Tofino", 49.082222
     ...
     '''
+    conf = SparkConf().setAppName("airports").setMaster("local[2]")
+    sc = SparkContext(conf = conf)
+    
+    p = re.compile(''',(?=(?:[^"]*"[^"]*")*[^"]*$)''')
+    
+    airports = sc.textFile("in/airports.text").map(lambda x : p.split(x))
+    airportsLat40 = airports.filter(lambda x: float(x[6]) > 40)
+    
+    airportNameandLat = airportsLat40.map(lambda x : f'{x[1]}, {x[6]}')
+    
+    airportNameandLat.saveAsTextFile('out/airports_by_latitude.text')
+        
+    sc.stop()
