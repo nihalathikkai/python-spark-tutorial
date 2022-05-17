@@ -7,6 +7,7 @@ if __name__ == "__main__":
     inputWords = ["spark", "hadoop", "spark", "hive", "pig", "cassandra", "hadoop"]
     wordRdd = sc.parallelize(inputWords)
     
-    words = wordRdd.take(3)
-    for word in words:
+    print(wordRdd.take(3))
+    
+    for word in wordRdd.take(3):
         print(word)
