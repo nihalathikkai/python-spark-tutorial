@@ -1,4 +1,4 @@
-from pyspark import SparkContext
+from pyspark import SparkContext, SparkConf
 
 if __name__ == "__main__":
 
@@ -13,3 +13,15 @@ if __name__ == "__main__":
 
     Make sure the head lines are removed in the resulting RDD.
     '''
+    conf = SparkConf().setAppName("unionLogs").setMaster("local[*]")
+    sc = SparkContext(conf = conf)
+    
+    logs1 = sc.textFile("in/nasa_19950701.tsv").filter(lambda x : not x.startswith("host	logname"))
+    logs2 = sc.textFile("in/nasa_19950801.tsv").filter(lambda x : not x.startswith("host	logname"))
+    
+    logsunion = logs1.union(logs2)
+    logssample = logsunion.sample(withReplacement = True, fraction = 0.1)
+    
+    logssample.saveAsTextFile("out/sample_nasa_logs.tsv")
+    
+    sc.stop()
