@@ -18,7 +18,7 @@ if __name__ == "__main__":
     Make sure the head lines are removed in the resulting RDD.
     '''
         
-    conf = SparkConf().setAppName("unionLogs").setMaster("local[*]")
+    conf = SparkConf().setAppName("nasa").setMaster("local[*]")
     sc = SparkContext(conf = conf)
     
     logs1 = sc.textFile("in/nasa_19950701.tsv")
