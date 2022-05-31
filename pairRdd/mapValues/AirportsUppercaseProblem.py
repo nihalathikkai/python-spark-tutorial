@@ -1,4 +1,5 @@
-from pyspark import SparkContext
+from pyspark import SparkContext, SparkConf
+import re
 
 if __name__ == "__main__":
 
@@ -20,5 +21,13 @@ if __name__ == "__main__":
 
     '''
 
-
+    conf = SparkConf().setAppName("airports").setMaster("local[*]")
+    sc = SparkContext(conf = conf)
      
+    p = re.compile(''',(?=(?:[^"]*"[^"]*")*[^"]*$)''')
+     
+    airports = sc.textFile("in/airports.text").map(lambda x : p.split(x))
+    airportspairRDD = airports.map(lambda x : (x[1].strip('"'), x[3].strip('"')))
+    airportpairRDDupper = airportspairRDD.mapValues(lambda x : x.upper())
+    
+    airportpairRDDupper.coalesce(1).saveAsTextFile("out/airports_uppercase.text")

@@ -1,4 +1,5 @@
-from pyspark import SparkContext
+from pyspark import SparkContext, SparkConf
+import re
 
 if __name__ == "__main__":
 
@@ -18,3 +19,14 @@ if __name__ == "__main__":
     ...
 
     '''
+    
+    conf = SparkConf().setAppName("airports").setMaster("local[*]")
+    sc = SparkContext(conf = conf)
+    
+    p = re.compile(''',(?=(?:[^"]*"[^"]*")*[^"]*$)''')
+    
+    airports = sc.textFile("in/airports.text").map(lambda x : (p.split(x)))
+    airportspairRDD = airports.map(lambda x : (x[1].strip('"'), x[3].strip('"')))
+    airportsnotinUSA = airportspairRDD.filter(lambda x : x[1] != "United States")
+    
+    airportsnotinUSA.coalesce(1).saveAsTextFile("out/airports_not_in_usa_pair_rdd.text")

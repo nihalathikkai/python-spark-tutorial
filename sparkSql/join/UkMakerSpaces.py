@@ -19,4 +19,4 @@ if __name__ == "__main__":
         .join(postCode, makerSpace["Postcode"].startswith(postCode["Postcode"]), "left_outer")
 
     print("=== Group by Region ===")
-    joined.groupBy("Region").count().show(200)
+    joined.groupBy("Region").count().orderBy(fs.desc("count")).show(200)

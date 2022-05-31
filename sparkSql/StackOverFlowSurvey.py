@@ -6,11 +6,9 @@ SALARY_MIDPOINT_BUCKET = "salary_midpoint_bucket"
 
 if __name__ == "__main__":
 
-    session = SparkSession.builder.appName("StackOverFlowSurvey").getOrCreate()
+    spark = SparkSession.builder.appName("StackOverFlowSurvey").master("local[1]").getOrCreate()
 
-    dataFrameReader = session.read
-
-    responses = dataFrameReader \
+    responses = spark.read \
         .option("header", "true") \
         .option("inferSchema", value = True) \
         .csv("in/2016-stack-overflow-survey-responses.csv")
@@ -57,4 +55,4 @@ if __name__ == "__main__":
         .orderBy(SALARY_MIDPOINT_BUCKET) \
         .show()
 
-    session.stop()
+    spark.stop()
